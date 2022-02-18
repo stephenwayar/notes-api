@@ -78,7 +78,7 @@ app.post('/api/notes', (req, res) => {
   res.json(note)
 })
 
-// Heroku address: 
+// Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
