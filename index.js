@@ -78,7 +78,7 @@ app.post('/api/notes', (req, res) => {
   res.json(note)
 })
 
-// Heroku address: https://damp-shelf-44538.herokuapp.com/api/notes
+// Heroku address: 
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
