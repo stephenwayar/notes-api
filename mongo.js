@@ -7,8 +7,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2]
 
-const url =
-  `mongodb+srv://notesdb:${password}@cluster0.aygok.mongodb.net/noteApp?retryWrites=true&w=majority`
+const url = `mongodb+srv://stephenwayar:${password}@dev.8sp8s.mongodb.net/noteApp?retryWrites=true&w=majority`
 
 mongoose.connect(url)
 
@@ -21,9 +20,9 @@ const noteSchema = new mongoose.Schema({
 const Note = mongoose.model('Note', noteSchema)
 
 // const note = new Note({
-//   content: 'Mongoose make the use of MongoDB easy!',
+//   content: 'DevOps with Docker is fun!',
 //   date: new Date(),
-//   important: true,
+//   important: false
 // })
 
 // note.save().then(result => {
