@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const mongoose = require('mongoose')
+require('dotenv').config()
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
@@ -26,6 +28,28 @@ let notes = [
   }
 ]
 
+const password = process.env.DATABASE_PASSWORD
+
+const url = `mongodb+srv://stephenwayar:${password}@dev.8sp8s.mongodb.net/noteApp?retryWrites=true&w=majority`
+
+mongoose.connect(url)
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean
+})
+
+noteSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
+const Note = mongoose.model('Note', noteSchema)
+
 //API routes
 
 app.get('/', (req, res) => {
@@ -33,7 +57,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/notes', (req, res) => {
-  res.json(notes)
+  Note.find({}).then(notes => {
+    res.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (req, res) => {
