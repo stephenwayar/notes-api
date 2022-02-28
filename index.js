@@ -1,4 +1,4 @@
-require('dotenv').config({path: PORT})
+require('dotenv').config({path: 'PORT'})
 const express = require('express')
 const app = express()
 const cors = require('cors')
