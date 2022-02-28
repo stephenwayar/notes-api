@@ -36,5 +36,3 @@ Note.find({}).then(result => {
   })
   mongoose.connection.close()
 })
-
-//Request is sent by the command: node mongo.js <dbPassword:password>
