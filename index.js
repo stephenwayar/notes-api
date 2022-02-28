@@ -1,4 +1,4 @@
-require('dotenv').config({path: '/.env'})
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -57,7 +57,7 @@ app.post('/api/notes', (req, res) => {
 
 // Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`)
 })
