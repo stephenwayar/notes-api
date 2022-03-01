@@ -19,16 +19,35 @@ app.get('/api/notes', (req, res) => {
   })
 })
 
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/notes/:id', (req, res, next) => {
   Note.findById(req.params.id).then(note => {
-    res.json(note)
-  })
+    if(note){
+      res.json(note)
+    }else{
+      res.status(404).end()
+    }
+  }).catch(error => next(error))
 })
 
-app.delete('/api/notes/:id', (req, res) => {
+app.delete('/api/notes/:id', (req, res, next) => {
   Note.findByIdAndDelete(req.params.id).then(() => {
     res.status(200).end()
-  })
+  }).catch(error => next(error))
+})
+
+app.put('/api/notes/:id', (request, response, next) => {
+  const body = request.body
+
+  const note = {
+    content: body.content,
+    important: body.important,
+  }
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/notes', (req, res) => {
@@ -55,8 +74,24 @@ app.post('/api/notes', (req, res) => {
   })
 })
 
-// Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if(error.name === 'CastError'){
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+  next(error)
+}
+// handler of requests with result to errors
+app.use(errorHandler)
+
+// Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`)
