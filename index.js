@@ -1,16 +1,19 @@
 require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const Note = require('./models/Note')
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
 //routes
 
-app.get('/', (req, res) => {
+app.get('/root', (req, res, next) => {
   res.send(`<h1>App root</h1>`)
+  next()
 })
 
 app.get('/api/notes', (req, res) => {
@@ -36,32 +39,19 @@ app.delete('/api/notes/:id', (req, res, next) => {
 })
 
 app.put('/api/notes/:id', (request, response, next) => {
-  const body = request.body
+  const {content, important} = request.body
 
-  const note = {
-    content: body.content,
-    important: body.important,
-  }
-
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
-    .then(updatedNote => {
-      response.json(updatedNote)
-    })
-    .catch(error => next(error))
+  Note.findByIdAndUpdate(
+    request.params.id, 
+    {content, important},
+    { new: true, runValidators: true, context: 'query' }
+  ).then(updatedNote => {
+    response.json(updatedNote)
+  }).catch(error => next(error))
 })
 
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', (req, res, next) => {
   const body = req.body
-
-  if(body.content === undefined){
-    return(
-      res
-        .status(400)
-        .json({
-          error: 'Content missing'
-        })
-    )    
-  }
 
   const note = new Note({
     content: body.content,
@@ -71,28 +61,28 @@ app.post('/api/notes', (req, res) => {
 
   note.save().then((savedNote) => {
     res.json(savedNote)
-  })
+  }).catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
-
-// handler of requests with unknown endpoint
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
   if(error.name === 'CastError'){
-    return response.status(400).send({ error: 'malformatted id' })
-  } 
+    response.status(400).send({ error: 'malformatted id' })
+  }else if(error.name === 'ValidationError'){
+    return response.status(400).json({ error: error.message })
+  }
   next(error)
-}
-// handler of requests with result to errors
+}  
 app.use(errorHandler)
 
-// Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`)
 })
+
+// Heroku address: https://hidden-cove-28467.herokuapp.com/api/notes
