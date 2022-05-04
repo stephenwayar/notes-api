@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
+const logger = require('../utils/logger')
 const url = process.env.MONGODB_URI
 
-console.log("Connecting to mongoDB...")
+logger.info("Connecting to mongoDB...")
 
 mongoose
   .connect(url)
   .then(() => {
-    console.log("Successfully connected to MongoDB!")
+    logger.info("Successfully connected to MongoDB!")
   }).catch(err => {
-  console.log("Failed to connect to MongoDB: ", err.message)
+  logger.error("Failed to connect to MongoDB: ", err.message)
 })
