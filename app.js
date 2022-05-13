@@ -5,7 +5,6 @@ const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
 
-
 const DB = require("./database/mongodb")
 const indexRouter = require('./routes/index')
 const noteRouter = require('./routes/notes')
