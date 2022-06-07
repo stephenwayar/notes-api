@@ -1,9 +1,8 @@
 const Note = require('../models/Note')
 
-exports.get_notes = (req, res) => {
-  Note.find({}).then(notes => {
-    res.json(notes)
-  })
+exports.get_notes = async (req, res) => {
+  const notes = await Note.find({})
+  res.json(notes)
 }
 
 exports.get_note = (req, res, next) => {
