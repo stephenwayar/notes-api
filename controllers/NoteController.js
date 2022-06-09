@@ -2,7 +2,7 @@ const Note = require('../models/Note')
 
 exports.get_notes = async (req, res) => {
   const notes = await Note.find({})
-  res.json(notes)
+  res.status(200).json(notes)
 }
 
 exports.get_note = (req, res, next) => {
@@ -32,14 +32,13 @@ exports.update_note = (request, response, next) => {
   }).catch(error => next(error))
 }
 
-exports.create_note = (req, res, next) => {
+exports.create_note = async (req, res, next) => {
   const body = req.body
   const note = new Note({
     content: body.content,
+    important: body.important || false,
     date: new Date(),
-    important: body.important || false
   })
-  note.save().then((savedNote) => {
-    res.json(savedNote)
-  }).catch(error => next(error))
+  const savedNote = await note.save()
+  res.status(201).json(savedNote)
 }

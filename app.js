@@ -8,7 +8,7 @@ const morgan = require('morgan')
 const DB = require("./database/config")
 const indexRouter = require('./routes/index')
 const noteRouter = require('./routes/notes')
-const middleware = require('./middlewares/middleware')
+const middleware = require('./middlewares/error')
 
 app.use(cors())
 app.use(express.json())

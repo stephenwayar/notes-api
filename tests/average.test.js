@@ -1,4 +1,4 @@
-const average = require('../helpers/for_testing').average
+const average = require('../helpers/testing').average
 
 describe('average', () => {
   test('of one value is the value itself', () => {
