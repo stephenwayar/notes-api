@@ -5,31 +5,28 @@ exports.get_notes = async (req, res) => {
   res.status(200).json(notes)
 }
 
-exports.get_note = (req, res, next) => {
-  Note.findById(req.params.id).then(note => {
-    if(note){
-      res.json(note)
-    }else{
-      res.status(404).end()
-    }
-  }).catch(error => next(error))
+exports.get_note = async (req, res, next) => {
+  const note = await Note.findById(req.params.id)
+  if (note){
+    res.json(note)
+  }else {
+    res.status(404).end()
+  }
 }
 
-exports.delete_note = (req, res, next) => {
-  Note.findByIdAndDelete(req.params.id).then(() => {
-    res.status(200).end()
-  }).catch(error => next(error))
+exports.delete_note = async (req, res, next) => {
+  await Note.findByIdAndDelete(req.params.id)
+  res.status(200).end()
 }
 
-exports.update_note = (request, response, next) => {
+exports.update_note = async (request, response, next) => {
   const { content, important } = request.body
-  Note.findByIdAndUpdate(
+  const updatedNote = await Note.findByIdAndUpdate(
     request.params.id,
     { content, important },
     { new: true, runValidators: true, context: 'query' }
-  ).then(updatedNote => {
-    response.json(updatedNote)
-  }).catch(error => next(error))
+  )
+  response.json(updatedNote)
 }
 
 exports.create_note = async (req, res, next) => {
