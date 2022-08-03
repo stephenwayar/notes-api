@@ -7,6 +7,7 @@ const morgan = require('morgan')
 require("./database/config")
 const indexRouter = require('./routes/index')
 const noteRouter = require('./routes/notes')
+const userRouter = require('./routes/user')
 const middleware = require('./middlewares/error')
 
 app.use(cors())
@@ -16,6 +17,7 @@ app.use(morgan('tiny'))
 
 app.use(indexRouter)
 app.use(noteRouter)
+app.use(userRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
