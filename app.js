@@ -1,11 +1,10 @@
 require('dotenv').config()
-
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
-
-const DB = require("./database/config")
+require("./database/config")
 const indexRouter = require('./routes/index')
 const noteRouter = require('./routes/notes')
 const middleware = require('./middlewares/error')
