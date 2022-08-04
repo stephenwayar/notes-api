@@ -1,8 +1,9 @@
 const Note = require('../models/Note')
+const User = require('../models/User')
 
 exports.get_notes = async (req, res) => {
   try{
-    const notes = await Note.find({})
+    const notes = await Note.find({}).populate('user', { username: 1, name: 1 })
     res.status(200).json(notes)
   }catch(error){
     res.status(500).end()
@@ -50,13 +51,21 @@ exports.update_note = async (request, response, next) => {
 
 exports.create_note = async (req, res, next) => {
   const body = req.body
+  const user = await User.findById(body.userId)
+
   const note = new Note({
     content: body.content,
     important: body.important || false,
     date: new Date(),
+    user: user._id
   })
+
   try{
     const savedNote = await note.save()
+
+    user.notes = user.notes.concat(savedNote._id)
+    await user.save()
+
     res.status(201).json(savedNote)
   }catch(error){
     next(error)
