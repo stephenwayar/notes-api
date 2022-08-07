@@ -2,14 +2,7 @@ const Note = require('../models/Note')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const logger = require('../utils/logger')
-
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
+const { getTokenFrom } = require('../middlewares/jwt')
 
 exports.get_notes = async (req, res) => {
   try{
