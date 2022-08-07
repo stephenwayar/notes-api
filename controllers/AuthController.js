@@ -7,7 +7,7 @@ exports.register_user = async (req, res) => {
 
   const existingUser = await User.findOne({ username })
   if (existingUser) {
-    return response.status(400).json({
+    return res.status(400).json({
       error: 'username must be unique'
     })
   }
@@ -27,5 +27,30 @@ exports.register_user = async (req, res) => {
 }
 
 exports.login_user = async (req, res) => {
-  
+  const { username, password } = req.body
+
+  const user = await User.findOne({ username })
+
+  const passwordIsCorrect = user ? await bcrypt.compare(password, user.passwordHash) : false
+
+  if(!(user && passwordIsCorrect)){
+    console.log(user, passwordIsCorrect)
+    return res.status(401).json({
+      success: false,
+      message: "Username or password is incorrect"
+    })
+  }
+
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  }
+
+  const token = jwt.sign(userForToken, process.env.SECRET)
+
+  res.status(200).send({
+    token,
+    username: user.username,
+    name: user.name,
+  })
 }

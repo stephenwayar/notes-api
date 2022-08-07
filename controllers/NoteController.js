@@ -1,5 +1,15 @@
 const Note = require('../models/Note')
 const User = require('../models/User')
+const jwt = require('jsonwebtoken')
+const logger = require('../utils/logger')
+
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
 
 exports.get_notes = async (req, res) => {
   try{
@@ -51,7 +61,28 @@ exports.update_note = async (request, response, next) => {
 
 exports.create_note = async (req, res, next) => {
   const body = req.body
-  const user = await User.findById(body.userId)
+
+  const token = getTokenFrom(req)
+
+  if (!token) {
+    logger.info('token is missing')
+    return res.status(401).json({
+      error: 'token missing or invalid'
+    })
+  }
+
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+
+  console.log(decodedToken)
+
+  if (!decodedToken.id) {
+    console.log('token present but invalid')
+    return res.status(401).json({
+      error: 'token missing or invalid'
+    })
+  }
+
+  const user = await User.findById(decodedToken.id)
 
   const note = new Note({
     content: body.content,
